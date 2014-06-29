@@ -2,8 +2,8 @@
   "name": "fragments",
   "title": "fragments",
   "id": "jid1-L5rAWdROHQMzaA",
-  "description": "a basic add-on",
-  "author": "",
+  "description": "A tool for getting URLs of page fragments",
+  "author": "Janusz Majnert",
   "license": "MPL 2.0",
   "version": "0.1"
 }
