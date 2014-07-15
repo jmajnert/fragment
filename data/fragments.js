@@ -69,4 +69,7 @@ function start(){
     traverse_children(doc.body);
 }
 start();
+self.port.on("bail", function(){
+    cleanup();
+});
 })();
