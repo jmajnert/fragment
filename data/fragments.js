@@ -27,6 +27,7 @@ function copy_url(e){
     self.port.emit("URL",url);
     cleanup();
     e.preventDefault();
+    e.stopPropagation();
 }
 function taint(e){
     clean_last_element();
