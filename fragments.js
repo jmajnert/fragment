@@ -4,6 +4,15 @@ var addressable_nodes=[];
 var color;
 var last_element=null;
 var doc;
+function copyTextToClipboard(text) {
+    var copyFrom = document.createElement("textarea");
+    copyFrom.textContent = text;
+    var body = document.getElementsByTagName('body')[0];
+    body.appendChild(copyFrom);
+    copyFrom.select();
+    document.execCommand('copy');
+    body.removeChild(copyFrom);
+}
 function clean_last_element(){
     if(last_element){
         last_element.style.backgroundColor=color;
@@ -24,7 +33,7 @@ function copy_url(e){
     }
     url+="#"+last_element.id;
     console.log("url:"+url);
-    self.port.emit("URL",url);
+    copyTextToClipboard(url);
     cleanup();
     e.preventDefault();
     e.stopPropagation();
@@ -70,7 +79,5 @@ function start(){
     traverse_children(doc.body);
 }
 start();
-self.port.on("bail", function(){
-    cleanup();
-});
+chrome.runtime.onMessage.addListener(cleanup);
 })();
