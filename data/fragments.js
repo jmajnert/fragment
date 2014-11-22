@@ -22,8 +22,9 @@ function copy_url(e){
     if(idx>0){
         url=url.slice(0,idx);
     }
-    url+="#"+last_element.id;
-    console.log("url:"+url);
+    var identifier=last_element.id;
+    if(id_list.indexOf(identifier)==-1)identifier=last_element.name;
+    url+="#"+identifier;
     self.port.emit("URL",url);
     cleanup();
     e.preventDefault();
@@ -62,12 +63,21 @@ function traverse_children(node){
     for(var i=0;i<node.children.length;i++){
         traverse(node.children[i]);
     }
-    attach_event_handlers();
+}
+function process_anchors(anchors){
+    for(var i=0;i<anchors.length;i++){
+        var rv=append_unique(anchors[i].name);
+        if(rv==0){
+            addressable_nodes.push(anchors[i]);
+        }
+    }
 }
 function start(){
     doc=document;
     if(!doc)return;
     traverse_children(doc.body);
+    process_anchors(doc.anchors);
+    attach_event_handlers();
 }
 start();
 self.port.on("bail", function(){
