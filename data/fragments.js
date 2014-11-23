@@ -80,7 +80,7 @@ function start(){
     attach_event_handlers();
 }
 start();
-self.port.on("bail", function(){
+self.port.on("detach", function() {
     cleanup();
 });
 })();
