@@ -34,7 +34,7 @@ function taint(target){
 }
 function howToReachElement(o){
     if(o.id != "" && document.getElementById(o.id) == o) return o.id;
-    if(o.tagName == "a" && o.name != "" && document.getElementById(o.name) == null){
+    if(o.tagName == "A" && o.name != "" && document.getElementById(o.name) == null){
         for(var i = 0; i < document.anchors.length; i++){
             if(document.anchors[i].name == o.name) return o.name;
         }
@@ -45,8 +45,8 @@ function handler(e){
     var o = e.target;
     identifier = howToReachElement(o);
     while(identifier == null){
+        if(o == document.body || o.parentElement == document.body) return;
         o = o.parentElement;
-        if(o == document.body) return;
         identifier = howToReachElement(o);
     }
     taint(o);
