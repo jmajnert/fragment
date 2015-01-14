@@ -1,9 +1,8 @@
 (function (){
-var id_list=[];
-var addressable_nodes=[];
 var color;
-var last_element=null;
-var doc;
+var lastElement=null;
+var identifier;
+
 function copyTextToClipboard(text) {
     var copyFrom = document.createElement("textarea");
     copyFrom.textContent = text;
@@ -13,70 +12,59 @@ function copyTextToClipboard(text) {
     document.execCommand('copy');
     body.removeChild(copyFrom);
 }
-function clean_last_element(){
-    if(last_element){
-        last_element.style.backgroundColor=color;
-        last_element.removeEventListener("click",copy_url,true);
+function cleanLastElement(){
+    if(lastElement){
+        lastElement.style.backgroundColor = color;
+        lastElement.removeEventListener("click", copyUrl, true);
     }
 }
 function cleanup(){
-    clean_last_element();
-    for(var i=0;i<addressable_nodes.length;i++){
-        addressable_nodes[i].removeEventListener("mouseover",taint,true);
-    }
+    cleanLastElement();
+    stop();
 }
-function copy_url(e){
-    var url=""+doc.location;
-    var idx=url.indexOf("#");
-    if(idx>0){
-        url=url.slice(0,idx);
+function copyUrl(e){
+    var url = "" + document.location;
+    var idx = url.indexOf("#");
+    if(idx > 0){
+        url = url.slice(0, idx);
     }
-    url+="#"+last_element.id;
-    console.log("url:"+url);
+    url += "#" + identifier;
     copyTextToClipboard(url);
     cleanup();
     e.preventDefault();
     e.stopPropagation();
 }
-function taint(e){
-    clean_last_element();
-    last_element=e.currentTarget;
-    color=e.currentTarget.style.backgroundColor;
-    e.currentTarget.style.backgroundColor="red";
-    e.currentTarget.addEventListener("click",copy_url,true);
+function taint(target){
+    cleanLastElement();
+    lastElement = target;
+    color = target.style.backgroundColor;
+    target.style.backgroundColor = "red";
+    target.addEventListener("click", copyUrl, true);
 }
-function append_unique(id){
-    if(id=="")return 1;
-    if(id_list.indexOf(id)==-1){
-        id_list.push(id);
-        return 0;
+function howToReachElement(o){
+    if(o.id != "" && document.getElementById(o.id) == o) return o.id;
+    if(o.tagName == "A" && o.name != "" && document.getElementById(o.name) == null){
+        for(var i = 0; i < document.anchors.length; i++){
+            if(document.anchors[i].name == o.name) return o.name;
+        }
     }
-    return 1;
+    return null;
 }
-function traverse(node){
-    var rv=append_unique(node.id);
-    if(rv==0){
-        addressable_nodes.push(node);
+function handler(e){
+    var o = e.target;
+    identifier = howToReachElement(o);
+    while(identifier == null){
+        if(o == document.body || o.parentElement == document.body) return;
+        o = o.parentElement;
+        identifier = howToReachElement(o);
     }
-    for(var i=0;i<node.children.length;i++){
-        traverse(node.children[i]);
-    }
-}
-function attach_event_handlers(){
-    for(var i=0;i<addressable_nodes.length;++i){
-        addressable_nodes[i].addEventListener("mouseover",taint,true);
-    }
-}
-function traverse_children(node){
-    for(var i=0;i<node.children.length;i++){
-        traverse(node.children[i]);
-    }
-    attach_event_handlers();
+    taint(o);
 }
 function start(){
-    doc=document;
-    if(!doc)return;
-    traverse_children(doc.body);
+    document.body.addEventListener("mousemove", handler);
+}
+function stop(){
+    document.body.removeEventListener("mousemove", handler);
 }
 start();
 chrome.runtime.onMessage.addListener(cleanup);
