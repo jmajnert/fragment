@@ -51,11 +51,17 @@ function handler(e){
     }
     taint(o);
 }
+function escapeHandler(e){
+    if(e.keyCode == 27) self.port.emit("escape", "esc pressed");
+    e.stopPropagation();
+}
 function start(){
     document.body.addEventListener("mousemove",handler);
+    window.addEventListener("keydown", escapeHandler);
 }
 function stop(){
     document.body.removeEventListener("mousemove",handler);
+    window.removeEventListener("keydown", escapeHandler);
 }
 start();
 self.port.on("detach", function() {
