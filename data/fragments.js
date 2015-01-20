@@ -21,7 +21,6 @@ function copyUrl(e){
     }
     url += "#" + identifier;
     self.port.emit("URL", url);
-    cleanup();
     e.preventDefault();
     e.stopPropagation();
 }
