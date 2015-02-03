@@ -52,6 +52,7 @@ function howToReachElement(o){
 }
 function handler(e){
     var o = e.target;
+    if(lastElement == o) return;
     identifier = howToReachElement(o);
     while(identifier == null){
         if(o == document.body || o.parentElement == document.body) return;
