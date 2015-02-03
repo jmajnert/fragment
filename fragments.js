@@ -23,11 +23,13 @@ function cleanup(){
 }
 function copyUrl(e){
     var url = "" + document.location;
-    var idx = url.indexOf("#");
-    if(idx > 0){
-        url = url.slice(0, idx);
+    if(identifier){
+        var idx = url.indexOf("#");
+        if(idx > 0){
+            url = url.slice(0, idx);
+        }
+        url += "#" + identifier;
     }
-    url += "#" + identifier;
     copyTextToClipboard(url);
     cleanup();
     chrome.runtime.sendMessage("bail");
