@@ -62,11 +62,24 @@ function handler(e){
     }
     taint(o);
 }
+function escapeHandler(e){
+    if(e.keyCode == 27){
+        chrome.runtime.sendMessage("bail");
+        cleanup();
+        e.stopPropagation();
+    }
+}
 function start(){
+    if(!document.body){
+        chrome.runtime.sendMessage("bail");
+        return;
+    }
     document.body.addEventListener("mousemove", handler);
+    window.addEventListener("keydown", escapeHandler);
 }
 function stop(){
     document.body.removeEventListener("mousemove", handler);
+    window.removeEventListener("keydown", escapeHandler);
 }
 start();
 chrome.runtime.onMessage.addListener(cleanup);
