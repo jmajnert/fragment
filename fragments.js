@@ -31,6 +31,7 @@ function copyUrl(e){
     url += "#" + identifier;
     copyTextToClipboard(url);
     cleanup();
+    chrome.runtime.sendMessage("bail");
     e.preventDefault();
     e.stopPropagation();
 }

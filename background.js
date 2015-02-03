@@ -8,3 +8,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.executeScript(null, {file: "fragments.js"});
     running = true;
 });
+chrome.runtime.onMessage.addListener(function () {
+    //bailing
+    running = false;
+});
