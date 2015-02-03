@@ -15,7 +15,6 @@ function copyTextToClipboard(text) {
 function cleanLastElement(){
     if(lastElement){
         lastElement.style.backgroundColor = color;
-        lastElement.removeEventListener("click", copyUrl, true);
     }
 }
 function cleanup(){
@@ -40,7 +39,6 @@ function taint(target){
     lastElement = target;
     color = target.style.backgroundColor;
     target.style.backgroundColor = "red";
-    target.addEventListener("click", copyUrl, true);
 }
 function howToReachElement(o){
     if(o.id != "" && document.getElementById(o.id) == o) return o.id;
@@ -76,10 +74,12 @@ function start(){
     }
     document.body.addEventListener("mousemove", handler);
     window.addEventListener("keydown", escapeHandler);
+    window.addEventListener("click", copyUrl, true);
 }
 function stop(){
     document.body.removeEventListener("mousemove", handler);
     window.removeEventListener("keydown", escapeHandler);
+    window.removeEventListener("click", copyUrl, true);
 }
 start();
 chrome.runtime.onMessage.addListener(cleanup);
