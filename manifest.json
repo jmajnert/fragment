@@ -1,7 +1,7 @@
 {
   "name": "fragment",
   "description": "A tool for getting URLs of page fragments",
-  "version": "0.2",
+  "version": "0.3",
   "author": "Janusz Majnert",
   "permissions": [
     "activeTab",
