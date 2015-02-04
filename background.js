@@ -1,19 +1,24 @@
-var running = false;
-function wrapUp(){
-    running = false;
-    chrome.browserAction.setIcon({path: "icon.png"});
+var tabs = new Array();
+
+function engage(tabid){
+    tabs.push(tabid);
+    chrome.tabs.executeScript(tabid, {file: "fragments.js"});
+    chrome.browserAction.setIcon({tabId: tabid, path: "icon_red.png"});
+}
+
+function disengage(idx){
+    var id = tabs[idx];
+    tabs.splice(idx,1)
+    chrome.tabs.sendMessage(id, "bail");
+    chrome.browserAction.setIcon({tabId: id, path: "icon.png"});
 }
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-    if(running){
-        chrome.tabs.sendMessage(tab.id, "bail");
-        wrapUp();
-        return;
-    }
-    chrome.tabs.executeScript(null, {file: "fragments.js"});
-    chrome.browserAction.setIcon({path: "icon_red.png"});
-    running = true;
+    var idx = tabs.indexOf(tab.id);
+    if(idx > -1) disengage(idx);
+    else engage(tab.id);
 });
-chrome.runtime.onMessage.addListener(function () {
-    wrapUp();
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    var idx = tabs.indexOf(sender.tab.id);
+    if(idx > -1) disengage(idx);
 });
