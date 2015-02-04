@@ -6,7 +6,6 @@ var identifier;
 function cleanLastElement(){
     if(lastElement){
         lastElement.style.backgroundColor = color;
-        lastElement.removeEventListener("click", copyUrl, true);
     }
 }
 function cleanup(){
@@ -15,11 +14,13 @@ function cleanup(){
 }
 function copyUrl(e){
     var url = "" + document.location;
-    var idx = url.indexOf("#");
-    if(idx > 0){
-        url = url.slice(0, idx);
+    if(identifier){
+        var idx = url.indexOf("#");
+        if(idx > 0){
+            url = url.slice(0, idx);
+        }
+        url += "#" + identifier;
     }
-    url += "#" + identifier;
     self.port.emit("URL", url);
     e.preventDefault();
     e.stopPropagation();
@@ -29,7 +30,6 @@ function taint(target){
     lastElement = target;
     color = target.style.backgroundColor;
     target.style.backgroundColor = "red";
-    target.addEventListener("click", copyUrl, true);
 }
 function howToReachElement(o){
     if(o.id != "" && document.getElementById(o.id) == o) return o.id;
@@ -42,6 +42,7 @@ function howToReachElement(o){
 }
 function handler(e){
     var o = e.target;
+    if(lastElement == o) return;
     identifier = howToReachElement(o);
     while(identifier == null){
         if(o == document.body || o.parentElement == document.body) return;
@@ -51,8 +52,10 @@ function handler(e){
     taint(o);
 }
 function escapeHandler(e){
-    if(e.keyCode == 27) self.port.emit("bail", "esc pressed");
-    e.stopPropagation();
+    if(e.keyCode == 27){
+        self.port.emit("bail", "esc pressed");
+        e.stopPropagation();
+    }
 }
 function start(){
     if(!document.body){
@@ -61,10 +64,12 @@ function start(){
     }
     document.body.addEventListener("mousemove",handler);
     window.addEventListener("keydown", escapeHandler);
+    window.addEventListener("click", copyUrl, true);
 }
 function stop(){
     document.body.removeEventListener("mousemove",handler);
     window.removeEventListener("keydown", escapeHandler);
+    window.removeEventListener("click", copyUrl, true);
 }
 start();
 self.port.on("detach", function() {
