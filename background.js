@@ -14,6 +14,7 @@ function disengage(idx){
 }
 
 chrome.browserAction.onClicked.addListener(function(tab) {
+    if(!tab.url.startsWith("http"))return;
     var idx = tabs.indexOf(tab.id);
     if(idx > -1) disengage(idx);
     else engage(tab.id);
