@@ -18,5 +18,5 @@
   "icons": {
       "128": "icon128.png"
   },
-  "manifest_version": 2
+  "manifest_version": 3
 }
